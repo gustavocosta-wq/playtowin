@@ -1,0 +1,1217 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLAYTOWIN • Scire Empreendimentos • Cardápio Digital</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,700;1,800;1,900&amp;family=Caveat:wght@600;700&amp;family=Cabinet+Grotesk:wght@800;900&amp;display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              orange: '#f17714',
+              orangeHover: '#d96307',
+              navy: '#0e1927',
+              sky: '#3ba5f3',
+              darkBlue: '#09111c',
+              grayBg: '#f8fafc',
+              cardBg: '#ffffff',
+              borderMuted: '#e2e8f0'
+            }
+          },
+          fontFamily: {
+            montserrat: ['Montserrat', 'sans-serif'],
+            script: ['Caveat', 'cursive'],
+            display: ['Cabinet Grotesk', 'Montserrat', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+
+    /* Track lines & court subtle patterns */
+    .bg-court-pattern {
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(59, 165, 243, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(241, 119, 20, 0.05) 0%, transparent 40%),
+        repeating-linear-gradient(45deg, rgba(14, 25, 39, 0.015) 0px, rgba(14, 25, 39, 0.015) 1px, transparent 1px, transparent 24px);
+    }
+
+    .stadium-border {
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 20px -2px rgba(14, 25, 39, 0.05);
+    }
+
+    /* Keyframe Animations */
+    @keyframes sportsBounce {
+      0% { transform: translateY(-80px) scale(0.9); opacity: 0; }
+      50% { transform: translateY(12px) scale(1.08, 0.92); opacity: 1; }
+      70% { transform: translateY(-8px) scale(0.98, 1.02); }
+      85% { transform: translateY(3px) scale(1.02, 0.98); }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(241, 119, 20, 0.4); }
+      50% { box-shadow: 0 0 25px rgba(241, 119, 20, 0.7); }
+    }
+
+    .animate-bounce-in {
+      animation: sportsBounce 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* Circle Timer Dasharray */
+    .timer-circle {
+      stroke-dasharray: 283;
+      stroke-dashoffset: 283;
+      transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Accordion expansion helper */
+    .accordion-content {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease, padding 0.35s ease;
+    }
+    .accordion-content.expanded {
+      max-height: 900px;
+      opacity: 1;
+      padding-top: 1rem;
+    }
+
+    /* Running lane pill transition */
+    .lane-active-pill {
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Status Bar Fill */
+    .status-bar-inner {
+      width: 0%;
+      transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .expanded .status-bar-inner {
+      /* Dynamic inline or class assigned */
+    }
+
+    /* Parallax subtle lines */
+    .track-lines {
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 38px,
+        rgba(241, 119, 20, 0.08) 38px,
+        rgba(241, 119, 20, 0.08) 40px
+      );
+    }
+
+    /* Ripple Click Effect */
+    .ripple-effect {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(241, 119, 20, 0.35);
+      transform: scale(0);
+      animation: rippleAnim 0.6s linear;
+      pointer-events: none;
+    }
+    @keyframes rippleAnim {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-[#fafbfc] text-brand-navy font-montserrat antialiased selection:bg-brand-orange selection:text-white pb-28 relative">
+
+  <!-- ==============================================
+       1. TELA DE CARREGAMENTO (LOADING SCREEN)
+       ============================================== -->
+  <div id="loading-screen" class="fixed inset-0 z-50 bg-[#0e1927] flex flex-col items-center justify-center transition-all duration-700" style="opacity: 0; pointer-events: none; display: none;">
+    <!-- Background dynamic glow -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+      <div class="absolute -top-32 -left-32 w-96 h-96 bg-brand-orange rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-brand-sky rounded-full blur-3xl"></div>
+      <div class="w-full h-full track-lines opacity-10"></div>
+    </div>
+
+    <!-- Center bounce box -->
+    <div class="relative z-10 flex flex-col items-center">
+      <!-- Logos with bounce animation -->
+      <div id="loader-logo-wrapper" class="animate-bounce-in mb-8 flex flex-col items-center">
+        <!-- Event Main Logo SVG / Graphic -->
+        <div class="flex items-center gap-2 mb-2">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4csotbtLNxMvNsUgIdn8XDGqR7Myp0aPzXNGxFdtOo2-LFqmZ1Yr6MRw0_3YvoyNxVpRiZHoSsDiS6QJL9uFUKQ51IdeN_vN9oj9MUSfZvFnADSv3AdnxQ19hAtHG-K-9OOVfn80LAilSpAe2mkjmTCe2TqvzwKu9cGIUWJyw0aFz4T-RryNlnaKQJvPB7JJdITenrLMvpBlAqGztQRrIv8CzGnOSe2ZNpLwwEnzEdms7G_mOfga2" alt="PLAY TO WIN" class="h-14 md:h-20 object-contain drop-shadow-[0_10px_20px_rgba(241,119,20,0.3)] filter brightness-105">
+        </div>
+        <div class="flex items-center gap-2 mt-1">
+          <span class="text-xs uppercase tracking-widest text-white/60 font-semibold">Apresentado por</span>
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwLJmhTNzPRwKWD78E4i7JUsR4LeBdxnOvQQU27d3pCwKz9fRQ1-0UVfYL2Y8qwjCiT6T8U-G8miwZ8r3Uubmah4_7Rn19Cb2uQ3k5PJX5WuzISijEIyaZ6Mhc2kWlhT7jQILw9CeaaYcoVHQq1F6wh9x2X13a_6JPAI2WDWdMLka0BjaQIs7wcHniN16qwQVBOXWlsjoAAKYfTr9mPjZ_B6qCDf3pmrpYv5TuDn2oAQVoLLydl2y0" alt="Scire Empreendimentos" class="h-5 object-contain invert brightness-200 contrast-200">
+        </div>
+      </div>
+
+      <!-- Cronômetro Minimalista de Pista -->
+      <div class="relative flex items-center justify-center">
+        <svg class="w-28 h-28 transform -rotate-90" viewBox="0 0 100 100">
+          <!-- Background track circle -->
+          <circle cx="50" cy="50" r="45" stroke="#1f2d42" stroke-width="4" fill="transparent"></circle>
+          <!-- Animated progress circle -->
+          <circle id="timer-progress" class="timer-circle" cx="50" cy="50" r="45" stroke="#f17714" stroke-width="5" stroke-linecap="round" fill="transparent" style="stroke-dashoffset: 0;"></circle>
+        </svg>
+
+        <!-- Digital Timer Counter -->
+        <div class="absolute flex flex-col items-center justify-center text-center">
+          <span id="timer-counter" class="text-3xl font-black italic tracking-tighter text-white font-montserrat">100%</span>
+          <span class="text-[9px] uppercase tracking-widest text-brand-sky font-bold">READY?</span>
+        </div>
+      </div>
+
+      <!-- Subtitle tipográfico esportivo -->
+      <div class="mt-6 flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70 text-xs font-medium">
+        <span class="w-2 h-2 rounded-full bg-brand-orange animate-ping"></span>
+        <span>Aquecendo os sabores da arena...</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==============================================
+       2. CABEÇALHO / HEADER ATHLETIC HERO
+       ============================================== -->
+  <header class="relative bg-brand-navy text-white overflow-hidden shadow-xl border-b border-brand-orange/20">
+    <!-- Graphic brand vectors in background -->
+    <div class="absolute inset-0 opacity-15 pointer-events-none">
+      <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqy8KJbvTvxa1xezdxwB88EgEjmtzk94CHHvBgcZtd584gDUeHiT31NtQrzmP-tg9orCbfo_DmiMC6hFTSOk6fg4GBulBUvsTAltYsZiV--HwxKK7JMv5kSjdXwEqwf4OQXJCg4G7vIWnmJE0QNzghNWSXPcwKzMKvFPp3dxKJhZdqB9T8sBhhXJBDbf4FwM1BfVBqbBbodVy5Z9yzdcacyh_EzZ2cuoldOyAfTEibtKvgdSKHrY2p" alt="Track Shape" class="absolute -right-16 -top-16 w-80 max-w-none transform rotate-12 filter invert">
+      <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPQY5eTo_2kxzqv73_A7HMSI0hE-ssa7U3RDwjv0aL5mLu2eESevaTU4k7Y-eX2cCts_Iy6NwIvziABpU-6avAiRP8DWm8171Z72w24B-NL1iPHb0CaZvUKzNhWBit-RtXCH5JNFKs82jxupAbKFwpre53TMeP9hUsuYWh1Wnit_AxtEXFctElmuoNdgIs2POi5KdXjE7Mk_hVJ5H3ucvQRpaT6SLyfsMDjU40VQ7gG-CfTIAnSgHX" alt="Curved Line" class="absolute left-0 bottom-0 w-72 max-w-none filter invert opacity-30">
+      <div class="absolute inset-0 bg-gradient-to-r from-brand-navy via-brand-navy/95 to-brand-navy/80"></div>
+    </div>
+
+    <!-- Top Bar with Corporate Scire Logo -->
+    <div class="relative z-10 max-w-4xl mx-auto px-4 pt-4 pb-2 flex items-center justify-between border-b border-white/10 text-xs">
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+        <span class="text-white/80 font-medium tracking-wide">OPEN FOOD &amp; OPEN BAR EXCLUSIVO</span>
+      </div>
+      <a href="https://www.scireempreendimentos.com.br/" target="_blank" class="hover:opacity-80 transition-opacity">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiWDgYXutk46L-AujJRBidEUdsjcYdXB9egdw2FwrL5WMrKND0R69IBjx05j2i0VQtsT2pRsK-6wRzgmkyGs9Lb418-eDWjAsaTl80T7vPPmA2Gre6jVkfPcOx6oeow53jYCoiCRGZCoH2aMkk1OkczoyqsRke0tgasBvrsItQu64pdbzar6TdvbGi_MFZKf2ACu8l5zLTGjWMNhnH_7Wu0BZEFKxs7l9qzEomFZrIH3AFHGU8JcNe" alt="Scire Empreendimentos" class="h-6 object-contain invert brightness-125">
+      </a>
+    </div>
+
+    <!-- Main Branding & Event Identity -->
+    <div class="relative z-10 max-w-4xl mx-auto px-4 pt-5 pb-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <!-- Badge tag -->
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-brand-orange/20 border border-brand-orange/40 text-brand-orange text-xs font-bold uppercase tracking-wider mb-3">
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+            Cardápio Oficial • Evento Scire
+          </div>
+
+          <div class="flex items-center gap-3">
+            <svg class="h-10 md:h-12 w-auto" viewBox="0 0 4462.55 940.96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .cls-ptw-orange { fill: #f17714; }
+      .cls-ptw-white { fill: #ffffff; }
+    </style>
+  </defs>
+  <g>
+    <g>
+      <g>
+        <path class="cls-ptw-white" d="M615.74,213.06l-121.96,280.34c-31.74,72.95-102.41,133.32-164.91,131.12l-79.7-.14-78.89,181.66H0S317.37,73.99,317.37,73.99l246.36,1.75c65.21.46,84.66,62.28,52.01,137.31ZM427.33,255.92l-18.11-.1-81.16,186.88,18.11.06,81.16-186.85Z"></path>
+        <path class="cls-ptw-white" d="M639.54,627.16l153.07.27-78.44,179.67h-323.35S708.65,76.78,708.65,76.78l170.28,1.21-239.39,549.16Z"></path>
+        <path class="cls-ptw-white" d="M1353.02,215.26l-259.34,591.84h-170.28s41.26-94.32,41.26-94.32l-23.55-.02-41.26,94.34h-170.28S991.18,207.95,991.18,207.95c31.74-72.69,101.96-131.56,164.91-130.07l150.35,1.07c65.21.47,79.22,61.8,46.58,136.3ZM1038.56,543.85l124.68-285.02-23.55-.13-124.68,285.08,23.55.06Z"></path>
+        <path class="cls-ptw-white" d="M1635.22,83.38l170.28,1.21-150.07,341.16c-31.28,71.12-94.26,129.78-156.31,134.79l-108.36,246.57h-170.28s107.91-245.96,107.91-245.96c-54.8-5.31-69.71-62.3-39.79-130.57l152.79-348.59,170.28,1.21-136.47,310.83,23.55.1,136.47-310.76Z"></path>
+        <path class="cls-ptw-white" d="M1811.84,84.64l349.62,2.49-78.44,177.69-89.67-.48-238.93,541.76h-170.28s238.93-542.68,238.93-542.68l-89.67-.48,78.44-178.3Z"></path>
+        <path class="cls-ptw-white" d="M2483.38,221.84l-201.3,454.33c-32.19,72.65-100.15,134.05-165.37,134.05h-150.35c-63.86,1.03-82.39-57.51-50.2-130.42l203.12-460.07c32.64-73.94,105.59-134.2,170.8-133.73l146.73,1.05c65.21.47,79.22,61.13,46.58,134.8ZM2294.05,263.89l-23.55-.13-162.77,368.06,23.55.04,162.77-367.97Z"></path>
+        <path class="cls-ptw-orange" d="M2972.09,92.9l170.28,1.21-261.6,586.91c-31.74,71.2-101.96,129.18-164.91,128.16h-97.82c-30.8,0-50.26-13.26-58.4-35.7-28.09,22.44-59.34,35.7-90.14,35.7h-97.82c-63.86,1.02-82.39-57.28-50.66-128.88l261.6-590.18,170.28,1.21-239.84,540.18,23.55.04,239.84-540.05,172.09,1.23-239.84,539.13,23.55.04,239.84-539Z"></path>
+        <path class="cls-ptw-orange" d="M2868.93,807.16l317.82-712.73,170.28,1.21-317.82,711.52h-170.28Z"></path>
+        <path class="cls-ptw-orange" d="M3705.68,229.96l-258.88,577.22h-170.28s239.39-534.66,239.39-534.66l-23.55-.13-239.39,534.78h-170.28s261.15-584.4,261.15-584.4c31.74-71.02,102.41-129.55,164.91-127.07l150.35,1.07c65.21.47,79.22,60.4,46.58,133.18Z"></path>
+      </g>
+      <path class="cls-ptw-orange" d="M4446.64,477.24c-10.76-13.41-21.55-26.88-32.36-40.37-118.31-147.67-240.65-300.38-355.85-420.7l-15.47-16.16-17.04,14.5c-34.56,29.42-70.15,59.32-105.79,88.86l-9.92,8.23,1.5,12.8c5.71,48.67,15.53,94.71,25.04,139.23,14.05,65.81,27.35,128.12,28.2,197.64-114.29,115.23-277.13,244.68-394.72,333.76l-12.86,9.74,4.33,15.54c8.87,31.8,18.31,64.08,28.05,95.96l7.55,24.69,23.96-9.6c338.26-135.57,614.28-276.8,820.4-419.78l20.9-14.5-15.91-19.84Z"></path>
+    </g>
+  </g>
+</svg>
+            <span class="font-script text-2xl sm:text-3xl text-brand-sky transform -rotate-6 tracking-wide drop-shadow">
+              gourmet arena
+            </span>
+          </div>
+
+          <p class="text-white/70 text-sm mt-2 max-w-md font-normal leading-relaxed">
+            Reposição contínua e estações por horário. Prepare-se para uma experiência de alta performance gastronômica.
+          </p>
+        </div>
+
+        <!-- Event Live Timer / Clock Box -->
+        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3.5 flex items-center gap-4 self-start md:self-auto shadow-inner">
+          <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-brand-orange text-white shadow-lg shadow-brand-orange/30">
+            <svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="text-[10px] uppercase font-bold tracking-widest text-brand-sky">Circuito Ativo</div>
+            <div class="text-lg font-black tracking-tight text-white font-montserrat">11h às 19h</div>
+            <div class="text-[11px] text-white/60">Open Bar até as 19h • Open Food até 18h</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ==============================================
+       3. NAVEGAÇÃO DE CATEGORIAS (ESTILO PISTA / PLACAR)
+       ============================================== -->
+  <nav id="category-nav" class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all duration-300">
+    <div class="max-w-4xl mx-auto px-4 py-3">
+      <!-- Tabs Container with running lane pill -->
+      <div class="relative flex items-center space-x-2 overflow-x-auto no-scrollbar scroll-smooth p-1 bg-slate-100 rounded-xl" role="tablist">
+        
+        <!-- Tab: Entradas (11h às 13h) -->
+        <button onclick="switchCategory('entradas', this)" class="category-btn relative z-10 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 flex-shrink-0 flex items-center gap-1.5 text-white bg-brand-orange shadow-md" data-target="entradas">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span>Entradas</span>
+          <span class="text-[10px] opacity-80 font-normal px-1.5 py-0.5 rounded bg-black/20">11h-13h</span>
+        </button>
+
+        <!-- Tab: Principais (13h às 16h) -->
+        <button onclick="switchCategory('principais', this)" class="category-btn relative z-10 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 flex-shrink-0 flex items-center gap-1.5 text-slate-600 hover:text-brand-navy" data-target="principais">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+          <span>Principais &amp; Saladas</span>
+          <span class="text-[10px] opacity-80 font-normal px-1.5 py-0.5 rounded bg-slate-200">13h-16h</span>
+        </button>
+
+        <!-- Tab: Sobremesa (16h às 17h) -->
+        <button onclick="switchCategory('sobremesa', this)" class="category-btn relative z-10 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 flex-shrink-0 flex items-center gap-1.5 text-slate-600 hover:text-brand-navy" data-target="sobremesa">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18z"></path></svg>
+          <span>Sobremesa</span>
+          <span class="text-[10px] opacity-80 font-normal px-1.5 py-0.5 rounded bg-slate-200">16h-17h</span>
+        </button>
+
+        <!-- Tab: Encerramento (17h às 18h) -->
+        <button onclick="switchCategory('encerramento', this)" class="category-btn relative z-10 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 flex-shrink-0 flex items-center gap-1.5 text-slate-600 hover:text-brand-navy" data-target="encerramento">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          <span>Pós-Jogo</span>
+          <span class="text-[10px] opacity-80 font-normal px-1.5 py-0.5 rounded bg-slate-200">17h-18h</span>
+        </button>
+
+        <!-- Tab: Bebidas Open Bar (11h às 19h) -->
+        <button onclick="switchCategory('bebidas', this)" class="category-btn relative z-10 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 flex-shrink-0 flex items-center gap-1.5 text-slate-600 hover:text-brand-navy" data-target="bebidas">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+          <span>Open Bar</span>
+          <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-brand-sky/20 text-brand-sky">11h-19h</span>
+        </button>
+      </div>
+
+      <!-- FILTROS DE PERFORMANCE (ESTILO PÍLULA) -->
+      <div class="mt-3 flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1 flex-shrink-0">
+          <svg class="w-3.5 h-3.5 text-brand-orange" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd"></path></svg>
+          Filtro:
+        </span>
+        
+        <button onclick="toggleFilter('all', this)" class="filter-pill active px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 bg-brand-navy text-white border border-brand-navy">
+          Todos os Pratos
+        </button>
+        <button onclick="toggleFilter('high-protein', this)" class="filter-pill px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200 bg-white text-slate-600 border border-slate-200 hover:border-brand-orange">
+          ⚡ High Protein
+        </button>
+        <button onclick="toggleFilter('vegetariano', this)" class="filter-pill px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200 bg-white text-slate-600 border border-slate-200 hover:border-emerald-500">
+          🌱 Vegetariano &amp; Frutas
+        </button>
+        <button onclick="toggleFilter('energia', this)" class="filter-pill px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200 bg-white text-slate-600 border border-slate-200 hover:border-brand-sky">
+          🔥 Pré &amp; Pós-Treino
+        </button>
+        <button onclick="toggleFilter('drinks', this)" class="filter-pill px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200 bg-white text-slate-600 border border-slate-200 hover:border-purple-500">
+          🍸 Drinks &amp; Chopp
+        </button>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- ==============================================
+       4. CONTEÚDO DO CARDÁPIO (ITENS & ACORDEÕES)
+       ============================================== -->
+  <main class="max-w-4xl mx-auto px-4 mt-6">
+
+    <!-- Card de Regra do Evento / Info Banner -->
+    <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-orange-50 to-blue-50 border border-orange-100 flex items-start gap-3.5 shadow-sm">
+      <div class="w-9 h-9 rounded-xl bg-brand-orange/10 text-brand-orange flex items-center justify-center flex-shrink-0 mt-0.5">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      </div>
+      <div>
+        <h4 class="text-xs uppercase font-extrabold tracking-wider text-brand-navy">Regra da Arena: Reposição Contínua</h4>
+        <p class="text-xs text-slate-600 mt-0.5 leading-relaxed">
+          O limite do cardápio é apenas por <strong class="text-brand-orange">horário da etapa</strong>, sem restrição de quantidade por pessoa. Fique à vontade para degustar todas as opções de cada circuito!
+        </p>
+      </div>
+    </div>
+
+
+    <!-- ==================== SEÇÃO 1: ENTRADAS ==================== -->
+    <section id="section-entradas" class="menu-section mb-10">
+      <div class="flex items-center justify-between pb-3 border-b-2 border-brand-orange mb-4">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-brand-orange"></span>
+          <h2 class="text-xl sm:text-2xl font-black italic uppercase tracking-tight text-brand-navy">
+            1. Etapa de Entradas
+          </h2>
+        </div>
+        <span class="px-3 py-1 bg-brand-navy text-white text-xs font-bold rounded-lg tracking-wider">
+          11h00 às 13h00
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- Item: Mesa Completa de Frios e Frutas (Especial) -->
+        <article class="menu-card bg-white rounded-2xl stadium-border p-4 transition-all duration-300 hover:shadow-lg relative overflow-hidden group cursor-pointer" data-category="entradas" data-tags="vegetariano energia" onclick="toggleCard(this)">
+          <div class="flex items-start justify-between">
+            <div class="pr-2">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 uppercase">Estação Principal</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Variado</span>
+              </div>
+              <h3 class="text-base font-extrabold text-brand-navy group-hover:text-brand-orange transition-colors">
+                Mesa Nobre de Frios &amp; Frutas Selecionadas
+              </h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-1">Amêndoas defumadas, pastas artesanais, queijos nobres e frutas da estação.</p>
+            </div>
+            <div class="text-right flex-shrink-0 flex flex-col items-end">
+              <span class="text-xs font-black uppercase text-brand-orange bg-orange-50 px-2 py-1 rounded-md">Open Food</span>
+              <span class="text-slate-400 text-xs mt-2 transform group-hover:translate-y-0.5 transition-transform">
+                <svg class="w-5 h-5 chevron-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="transform: rotate(0deg);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+            </div>
+          </div>
+
+          <!-- Acordeão Expansível -->
+          <div class="accordion-content">
+            <div class="border-t border-slate-100 pt-3 text-xs text-slate-600 space-y-2.5">
+              <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-2">
+                <div class="font-bold text-brand-navy text-[11px] uppercase tracking-wide flex items-center gap-1.5">
+                  <span class="text-brand-orange">●</span> Composição detalhada da mesa:
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                  <div><strong>Nuts &amp; Chips:</strong> Amêndoa defumada, nuts agridoce e chips de batatas.</div>
+                  <div><strong>Pastas Artesanais:</strong> Pesto, mostarda e mel, ricota com tomate seco e azeitonas pretas.</div>
+                  <div><strong>Pães &amp; Queijos:</strong> Torta de legumes, pães variados, tábua de frios, salada caprese e brie decorado com geleia de damasco e frutas vermelhas.</div>
+                  <div><strong>Mini Bruschetas:</strong> Gorgonzola com pera, mel e nozes; e de Caponata especial.</div>
+                  <div class="col-span-1 sm:col-span-2"><strong>Frutas Frescas:</strong> Uva verde e bordô sem caroço, melancia, melão, abacaxi, mini maçã e ameixa fresca.</div>
+                </div>
+              </div>
+
+              <!-- Barras de Performance / Status -->
+              <div class="pt-2">
+                <div class="text-[10px] uppercase font-bold text-slate-400 mb-1.5 tracking-wider">Status Esportivo &amp; Perfil</div>
+                <div class="space-y-1.5">
+                  <div>
+                    <div class="flex justify-between text-[11px] mb-0.5">
+                      <span class="font-medium text-slate-600">Densidade Energética (Frutas &amp; Nuts)</span>
+                      <span class="font-bold text-brand-orange">90%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                      <div class="status-bar-inner h-full bg-gradient-to-r from-amber-400 to-brand-orange" style="width: 90%;"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-[11px] mb-0.5">
+                      <span class="font-medium text-slate-600">Equilíbrio de Proteínas &amp; Fibras</span>
+                      <span class="font-bold text-brand-sky">85%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                      <div class="status-bar-inner h-full bg-gradient-to-r from-sky-400 to-brand-sky" style="width: 85%;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Item: Dadinho de Tapioca -->
+        <article class="menu-card bg-white rounded-2xl stadium-border p-4 transition-all duration-300 hover:shadow-lg relative overflow-hidden group cursor-pointer" data-category="entradas" data-tags="energia vegetariano" onclick="toggleCard(this)">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-800 uppercase">Clássico</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 uppercase">Carboidrato Limpo</span>
+              </div>
+              <h3 class="text-base font-extrabold text-brand-navy group-hover:text-brand-orange transition-colors">
+                Dadinho de Tapioca Dourado
+              </h3>
+              <p class="text-xs text-slate-500 mt-1">Crocante por fora, macio por dentro com queijo coalho e melaço suave.</p>
+            </div>
+            <div class="text-right flex-shrink-0 flex flex-col items-end">
+              <span class="text-xs font-black uppercase text-brand-orange bg-orange-50 px-2 py-1 rounded-md">Open Food</span>
+              <span class="text-slate-400 text-xs mt-2">
+                <svg class="w-5 h-5 chevron-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="transform: rotate(0deg);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="border-t border-slate-100 pt-3 text-xs text-slate-600 space-y-2">
+              <p>Feito artesanalmente com tapioca granulada, queijo coalho tostado na chapa e servido quentinho com toque especial.</p>
+              <div>
+                <div class="flex justify-between text-[11px] mb-0.5">
+                  <span class="font-medium">Carboidrato de Digestão Rápida</span>
+                  <span class="font-bold text-brand-orange">80%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="status-bar-inner h-full bg-brand-orange" style="width: 80%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Item: Isca de Peixe -->
+        <article class="menu-card bg-white rounded-2xl stadium-border p-4 transition-all duration-300 hover:shadow-lg relative overflow-hidden group cursor-pointer" data-category="entradas" data-tags="high-protein" onclick="toggleCard(this)">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-brand-navy uppercase">High Protein</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 uppercase">Crocante</span>
+              </div>
+              <h3 class="text-base font-extrabold text-brand-navy group-hover:text-brand-orange transition-colors">
+                Isca de Peixe Crocante
+              </h3>
+              <p class="text-xs text-slate-500 mt-1">Filé de peixe branco selecionado, empanamento crocante e limão siciliano.</p>
+            </div>
+            <div class="text-right flex-shrink-0 flex flex-col items-end">
+              <span class="text-xs font-black uppercase text-brand-orange bg-orange-50 px-2 py-1 rounded-md">Open Food</span>
+              <span class="text-slate-400 text-xs mt-2">
+                <svg class="w-5 h-5 chevron-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="border-t border-slate-100 pt-3 text-xs text-slate-600 space-y-2">
+              <p>Proteína nobre e leve para abrir o circuito atlético do dia sem pesar. Acompanha molho tártaro da casa.</p>
+              <div>
+                <div class="flex justify-between text-[11px] mb-0.5">
+                  <span class="font-medium">Proteína Magra</span>
+                  <span class="font-bold text-brand-sky">92%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="status-bar-inner h-full bg-brand-sky" style="width: 92%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Item: Almôndegas Fernando Carioni -->
+        <article class="menu-card bg-white rounded-2xl stadium-border p-4 transition-all duration-300 hover:shadow-lg relative overflow-hidden group cursor-pointer" data-category="entradas" data-tags="high-protein" onclick="toggleCard(this)">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800 uppercase">Receita Exclusiva</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 uppercase">Campeão</span>
+              </div>
+              <h3 class="text-base font-extrabold text-brand-navy group-hover:text-brand-orange transition-colors">
+                Almôndegas Fernando Carioni
+              </h3>
+              <p class="text-xs text-slate-500 mt-1">Blend artesanal temperado com ervas finas e molho pomodoro rústico.</p>
+            </div>
+            <div class="text-right flex-shrink-0 flex flex-col items-end">
+              <span class="text-xs font-black uppercase text-brand-orange bg-orange-50 px-2 py-1 rounded-md">Open Food</span>
+              <span class="text-slate-400 text-xs mt-2">
+                <svg class="w-5 h-5 chevron-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="border-t border-slate-100 pt-3 text-xs text-slate-600 space-y-2">
+              <p>Prato de assinatura preparado com carnes de primeira linha, receita tradicional da família com redução de tomates italianos frescos.</p>
+              <div>
+                <div class="flex justify-between text-[11px] mb-0.5">
+                  <span class="font-medium">Índice Proteico</span>
+                  <span class="font-bold text-brand-orange">95%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="status-bar-inner h-full bg-brand-orange" style="width: 95%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+
+    <!-- ==================== SEÇÃO 2: PRINCIPAIS ==================== -->
+    <section id="section-principais" class="menu-section mb-10">
+      <div class="flex items-center justify-between pb-3 border-b-2 border-brand-sky mb-4">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-brand-sky"></span>
+          <h2 class="text-xl sm:text-2xl font-black italic uppercase tracking-tight text-brand-navy">
+            2. Salada e Pratos Principais
+          </h2>
+        </div>
+        <span class="px-3 py-1 bg-brand-navy text-white text-xs font-bold rounded-lg tracking-wider">
+          13h00 às 16h00
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- Item: Salada Tanoa -->
+        <article class="menu-card bg-white rounded-2xl stadium-border p-4 transition-all duration-300 hover:shadow-lg relative overflow-hidden group cursor-pointer" data-category="principais" data-tags="vegetariano energia" onclick="toggleCard(this)">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">Frescor Total</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800 uppercase">Low Carb</span>
+              </div>
+              <h3 class="text-base font-extrabold text-brand-navy group-hover:text-brand-orange transition-colors">
+                Salada Tanoa Especial
+              </h3>
+              <p class="text-xs text-slate-500 mt-1">Mix de folhas nobres, lâminas de queijo, molho de mostarda e mel com toque crocante.</p>
+            </div>
+            <div class="text-right flex-shrink-0 flex flex-col items-end">
+              <span class="text-xs font-black uppercase text-brand-orange bg-orange-50 px-2 py-1 rounded-md">Open Food</span>
+              <span class="text-slate-400 text-xs mt-2">
+                <svg class="w-5 h-5 chevron-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="border-t border-slate-100 pt-3 text-xs text-slate-600 space-y-2">
+              <p>Composição balanceada e refrescante elaborada pelos chefs do Tanoa para harmonizar com os risotos quentes.</p>
+              <div>
+                <div class="flex justify-between text-[11px] mb-0.5">
+                  <span class="font-medium">Nível de Hidratação &amp; Fibras</span>
+                  <span class="font-bold text-emerald-600">98%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="status-bar-inner h-full bg-emerald-500" style="width: 98%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Item: Risoto de Camarão com Bacon -->
+        <article class="menu-card bg-white rounded-2xl stadium-border p-4 transition-all duration-300 hover:shadow-lg relative overflow-hidden group cursor-pointer" data-category="principais" data-tags="high-protein energia" onclick="toggleCard(this)">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-brand-orange uppercase">Destaque do Chef</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800 uppercase">Sabor Intenso</span>
+              </div>
+              <h3 class="text-base font-extrabold text-brand-navy group-hover:text-brand-orange transition-colors">
+                Risoto de Camarão com Bacon Crocante
+              </h3>
+              <p class="text-xs text-slate-500 mt-1">Arroz arbóreo al dente, camarões selecionados e finalização de bacon tostado.</p>
+            </div>
+            <div class="text-right flex-shrink-0 flex flex-col items-end">
+              <span class="text-xs font-black uppercase text-brand-orange bg-orange-50 px-2 py-1 rounded-md">Open Food</span>
+              <span class="text-slate-400 text-xs mt-2">
+                <svg class="w-5 h-5 chevron-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="border-t border-slate-100 pt-3 text-xs text-slate-600 space-y-2">
+              <p>Cremoso com caldo de crustáceos feito lentamente, queijo parmesão maturado e cubinhos de bacon defumado.</p>
+              <div>
+                <div class="flex justify-between text-[11px] mb-0.5">
+                  <span class="font-medium">Índice de Energia Pura</span>
+                  <span class="font-bold text-brand-orange">94%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="status-bar-inner h-full bg-brand-orange" style="width: 94%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Item: Risoto de Cogumelos Vegetariano -->
+        <article class="menu-card bg-white rounded-2xl stadium-border p-4 transition-all duration-300 hover:shadow-lg relative overflow-hidden group cursor-pointer" data-category="principais" data-tags="vegetariano energia" onclick="toggleCard(this)">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">100% Vegetariano</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 uppercase">Cogumelos Frescos</span>
+              </div>
+              <h3 class="text-base font-extrabold text-brand-navy group-hover:text-brand-orange transition-colors">
+                Risoto de Cogumelos do Bosque
+              </h3>
+              <p class="text-xs text-slate-500 mt-1">Shimeji e Paris salteados na manteiga clarificada, vinho branco e tomilho fresco.</p>
+            </div>
+            <div class="text-right flex-shrink-0 flex flex-col items-end">
+              <span class="text-xs font-black uppercase text-brand-orange bg-orange-50 px-2 py-1 rounded-md">Open Food</span>
+              <span class="text-slate-400 text-xs mt-2">
+                <svg class="w-5 h-5 chevron-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="border-t border-slate-100 pt-3 text-xs text-slate-600 space-y-2">
+              <p>Opção sem carne de alta densidade nutricional, com toque aromático e textura aveludada do queijo grana padano.</p>
+              <div>
+                <div class="flex justify-between text-[11px] mb-0.5">
+                  <span class="font-medium">Nutrição Fúngica &amp; Antioxidantes</span>
+                  <span class="font-bold text-emerald-600">88%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="status-bar-inner h-full bg-emerald-500" style="width: 88%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Item: Fettuccine ao Creme de Parmesão -->
+        <article class="menu-card bg-white rounded-2xl stadium-border p-4 transition-all duration-300 hover:shadow-lg relative overflow-hidden group cursor-pointer" data-category="principais" data-tags="energia" onclick="toggleCard(this)">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 uppercase">Massa Fresca</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 uppercase">Carbo Completo</span>
+              </div>
+              <h3 class="text-base font-extrabold text-brand-navy group-hover:text-brand-orange transition-colors">
+                Fettuccine ao Creme de Parmesão
+              </h3>
+              <p class="text-xs text-slate-500 mt-1">Massa grano duro envolvida em emulsão sedosa de queijo parmesão e noz-moscada.</p>
+            </div>
+            <div class="text-right flex-shrink-0 flex flex-col items-end">
+              <span class="text-xs font-black uppercase text-brand-orange bg-orange-50 px-2 py-1 rounded-md">Open Food</span>
+              <span class="text-slate-400 text-xs mt-2">
+                <svg class="w-5 h-5 chevron-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="border-t border-slate-100 pt-3 text-xs text-slate-600 space-y-2">
+              <p>Cozida perfeitamente no ponto, oferece a combinação ideal de sabor comfort food e energia prolongada para o ritmo do evento.</p>
+              <div>
+                <div class="flex justify-between text-[11px] mb-0.5">
+                  <span class="font-medium">Combustível de Glicogênio</span>
+                  <span class="font-bold text-amber-600">91%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="status-bar-inner h-full bg-amber-500" style="width: 91%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+
+    <!-- ==================== SEÇÃO 3: SOBREMESA ==================== -->
+    <section id="section-sobremesa" class="menu-section mb-10">
+      <div class="flex items-center justify-between pb-3 border-b-2 border-purple-500 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-purple-500"></span>
+          <h2 class="text-xl sm:text-2xl font-black italic uppercase tracking-tight text-brand-navy">
+            3. Etapa de Sobremesa
+          </h2>
+        </div>
+        <span class="px-3 py-1 bg-brand-navy text-white text-xs font-bold rounded-lg tracking-wider">
+          16h00 às 17h00
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- Item: Torta de Bolacha -->
+        <article class="menu-card bg-white rounded-2xl stadium-border p-4 transition-all duration-300 hover:shadow-lg relative overflow-hidden group cursor-pointer" data-category="sobremesa" data-tags="energia" onclick="toggleCard(this)">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800 uppercase">Tradicional</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-pink-100 text-pink-800 uppercase">Recarga Doce</span>
+              </div>
+              <h3 class="text-base font-extrabold text-brand-navy group-hover:text-brand-orange transition-colors">
+                Torta de Bolacha Artesanal
+              </h3>
+              <p class="text-xs text-slate-500 mt-1">Camadas intercaladas de biscoito amanteigado, creme suave e ganache especial.</p>
+            </div>
+            <div class="text-right flex-shrink-0 flex flex-col items-end">
+              <span class="text-xs font-black uppercase text-brand-orange bg-orange-50 px-2 py-1 rounded-md">Open Food</span>
+              <span class="text-slate-400 text-xs mt-2">
+                <svg class="w-5 h-5 chevron-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="transform: rotate(0deg);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="border-t border-slate-100 pt-3 text-xs text-slate-600 space-y-2">
+              <p>A clássica sobremesa afetiva reinventada com textura crocante, chocolate nobre e o ponto exato de doçura para recarregar as energias.</p>
+              <div>
+                <div class="flex justify-between text-[11px] mb-0.5">
+                  <span class="font-medium">Índice de Dopamina &amp; Felicidade</span>
+                  <span class="font-bold text-purple-600">100%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="status-bar-inner h-full bg-purple-500" style="width: 100%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+
+    <!-- ==================== SEÇÃO 4: ENCERRAMENTO ==================== -->
+    <section id="section-encerramento" class="menu-section mb-10">
+      <div class="flex items-center justify-between pb-3 border-b-2 border-brand-orange mb-4">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-brand-orange"></span>
+          <h2 class="text-xl sm:text-2xl font-black italic uppercase tracking-tight text-brand-navy">
+            4. Encerramento da Alimentação
+          </h2>
+        </div>
+        <span class="px-3 py-1 bg-brand-navy text-white text-xs font-bold rounded-lg tracking-wider">
+          17h00 às 18h00
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- Item: Mini-Hambúrguer Gourmet -->
+        <article class="menu-card bg-white rounded-2xl stadium-border p-4 transition-all duration-300 hover:shadow-lg relative overflow-hidden group cursor-pointer" data-category="encerramento" data-tags="high-protein energia" onclick="toggleCard(this)">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800 uppercase">Smash Burger</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-800 uppercase">Pós-Jogo</span>
+              </div>
+              <h3 class="text-base font-extrabold text-brand-navy group-hover:text-brand-orange transition-colors">
+                Mini-Hambúrguer Artesanal
+              </h3>
+              <p class="text-xs text-slate-500 mt-1">Blend bovino suculento, queijo cheddar derretido e pão brioche dourado na manteiga.</p>
+            </div>
+            <div class="text-right flex-shrink-0 flex flex-col items-end">
+              <span class="text-xs font-black uppercase text-brand-orange bg-orange-50 px-2 py-1 rounded-md">Open Food</span>
+              <span class="text-slate-400 text-xs mt-2">
+                <svg class="w-5 h-5 chevron-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="border-t border-slate-100 pt-3 text-xs text-slate-600 space-y-2">
+              <p>O combo perfeito para fechar o circuito com chave de ouro: montado na hora em porções práticas para saborear enquanto confraterniza.</p>
+              <div>
+                <div class="flex justify-between text-[11px] mb-0.5">
+                  <span class="font-medium">Potência Proteica de Recuperação</span>
+                  <span class="font-bold text-brand-orange">92%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="status-bar-inner h-full bg-brand-orange" style="width: 92%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Item: Batata Frita Crocante -->
+        <article class="menu-card bg-white rounded-2xl stadium-border p-4 transition-all duration-300 hover:shadow-lg relative overflow-hidden group cursor-pointer" data-category="encerramento" data-tags="energia" onclick="toggleCard(this)">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 uppercase">Super Crocante</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 uppercase">Finger Food</span>
+              </div>
+              <h3 class="text-base font-extrabold text-brand-navy group-hover:text-brand-orange transition-colors">
+                Batata Frita Dourada
+              </h3>
+              <p class="text-xs text-slate-500 mt-1">Fritas fininhas, sequinhas e crocantes com pitada de flor de sal.</p>
+            </div>
+            <div class="text-right flex-shrink-0 flex flex-col items-end">
+              <span class="text-xs font-black uppercase text-brand-orange bg-orange-50 px-2 py-1 rounded-md">Open Food</span>
+              <span class="text-slate-400 text-xs mt-2">
+                <svg class="w-5 h-5 chevron-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="border-t border-slate-100 pt-3 text-xs text-slate-600 space-y-2">
+              <p>Servidas sempre quentes em pequenos cones com molhos especiais para acompanhar as cervejas e drinks da tarde.</p>
+              <div>
+                <div class="flex justify-between text-[11px] mb-0.5">
+                  <span class="font-medium">Fator Crocância</span>
+                  <span class="font-bold text-amber-500">96%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="status-bar-inner h-full bg-amber-500" style="width: 96%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+
+    <!-- ==================== SEÇÃO 5: OPEN BAR ==================== -->
+    <section id="section-bebidas" class="menu-section mb-12">
+      <div class="flex items-center justify-between pb-3 border-b-2 border-brand-sky mb-4">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-brand-sky"></span>
+          <h2 class="text-xl sm:text-2xl font-black italic uppercase tracking-tight text-brand-navy">
+            5. Circuito Open Bar
+          </h2>
+        </div>
+        <span class="px-3 py-1 bg-brand-sky text-white text-xs font-bold rounded-lg tracking-wider">
+          11h00 às 19h00
+        </span>
+      </div>
+
+      <!-- Alerta especial sobre Espumante do Brinde -->
+      <div class="mb-4 p-3.5 rounded-xl bg-sky-50 border border-sky-200 flex items-center gap-3">
+        <div class="text-brand-sky">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"></path></svg>
+        </div>
+        <div class="text-xs text-slate-700">
+          <strong class="text-brand-navy">Momento do Brinde:</strong> O espumante comemorativo será servido exclusivamente no momento solene do brinde oficial da vitória, sem cota individual de consumo durante este ato!
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+
+        <!-- Chopp Kairós -->
+        <article class="menu-card bg-white rounded-xl stadium-border p-3.5 transition-all duration-300 hover:shadow-md cursor-pointer" data-category="bebidas" data-tags="drinks" onclick="toggleCard(this)">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">🍺</span>
+              <div>
+                <h4 class="font-extrabold text-sm text-brand-navy">Chopp Kairós</h4>
+                <span class="text-[11px] text-slate-500">Chopp artesanal geladíssimo</span>
+              </div>
+            </div>
+            <span class="chevron-icon text-slate-400">
+              <svg class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </span>
+          </div>
+          <div class="accordion-content">
+            <p class="text-[11px] text-slate-600 pt-2 border-t border-slate-100">Cervejaria local de alta qualidade, servido na temperatura perfeita de pista direto da torneira.</p>
+          </div>
+        </article>
+
+        <!-- Long Neck Corona & Stella -->
+        <article class="menu-card bg-white rounded-xl stadium-border p-3.5 transition-all duration-300 hover:shadow-md cursor-pointer" data-category="bebidas" data-tags="drinks" onclick="toggleCard(this)">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">🍻</span>
+              <div>
+                <h4 class="font-extrabold text-sm text-brand-navy">Corona &amp; Stella</h4>
+                <span class="text-[11px] text-slate-500">Cervejas Long Neck</span>
+              </div>
+            </div>
+            <span class="chevron-icon text-slate-400">
+              <svg class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </span>
+          </div>
+          <div class="accordion-content">
+            <p class="text-[11px] text-slate-600 pt-2 border-t border-slate-100">Disponíveis geladas durante todas as 8 horas ininterruptas de evento.</p>
+          </div>
+        </article>
+
+        <!-- Caipirinhas Cachaça / Vodka -->
+        <article class="menu-card bg-white rounded-xl stadium-border p-3.5 transition-all duration-300 hover:shadow-md cursor-pointer" data-category="bebidas" data-tags="drinks" onclick="toggleCard(this)">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">🍋</span>
+              <div>
+                <h4 class="font-extrabold text-sm text-brand-navy">Caipirinhas</h4>
+                <span class="text-[11px] text-slate-500">Cachaça nobre ou Vodka</span>
+              </div>
+            </div>
+            <span class="chevron-icon text-slate-400">
+              <svg class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </span>
+          </div>
+          <div class="accordion-content">
+            <p class="text-[11px] text-slate-600 pt-2 border-t border-slate-100">Maceradas na hora com frutas frescas, gelo e equilíbrio ideal.</p>
+          </div>
+        </article>
+
+        <!-- Moscow Mule -->
+        <article class="menu-card bg-white rounded-xl stadium-border p-3.5 transition-all duration-300 hover:shadow-md cursor-pointer" data-category="bebidas" data-tags="drinks" onclick="toggleCard(this)">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center font-bold text-sm">🧊</span>
+              <div>
+                <h4 class="font-extrabold text-sm text-brand-navy">Moscow Mule</h4>
+                <span class="text-[11px] text-slate-500">Vodka, gengibre e espuma</span>
+              </div>
+            </div>
+            <span class="chevron-icon text-slate-400">
+              <svg class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </span>
+          </div>
+          <div class="accordion-content">
+            <p class="text-[11px] text-slate-600 pt-2 border-t border-slate-100">Servido na tradicional caneca de cobre com espuma cítrica aveludada.</p>
+          </div>
+        </article>
+
+        <!-- Gin Tônica -->
+        <article class="menu-card bg-white rounded-xl stadium-border p-3.5 transition-all duration-300 hover:shadow-md cursor-pointer" data-category="bebidas" data-tags="drinks" onclick="toggleCard(this)">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm">🍸</span>
+              <div>
+                <h4 class="font-extrabold text-sm text-brand-navy">Gin-Tônica</h4>
+                <span class="text-[11px] text-slate-500">Especiarias &amp; Botânicos</span>
+              </div>
+            </div>
+            <span class="chevron-icon text-slate-400">
+              <svg class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </span>
+          </div>
+          <div class="accordion-content">
+            <p class="text-[11px] text-slate-600 pt-2 border-t border-slate-100">Gin infusionado com zimbro, rodelas cítricas e água tônica premium.</p>
+          </div>
+        </article>
+
+        <!-- Não Alcoólicos: Água, Suco, Refri -->
+        <article class="menu-card bg-white rounded-xl stadium-border p-3.5 transition-all duration-300 hover:shadow-md cursor-pointer" data-category="bebidas" data-tags="vegetariano energia" onclick="toggleCard(this)">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-sm">💧</span>
+              <div>
+                <h4 class="font-extrabold text-sm text-brand-navy">Hidratação</h4>
+                <span class="text-[11px] text-slate-500">Água, Sucos &amp; Refris</span>
+              </div>
+            </div>
+            <span class="chevron-icon text-slate-400" style="transform: rotate(0deg);">
+              <svg class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </span>
+          </div>
+          <div class="accordion-content">
+            <p class="text-[11px] text-slate-600 pt-2 border-t border-slate-100">Água mineral com e sem gás, refrigerantes convencionais e zero, e sucos naturais.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ==============================================
+       5. RODAPÉ INSTITUCIONAL (SCIRE EMPREENDIMENTOS)
+       ============================================== -->
+  <footer class="bg-brand-navy text-white pt-10 pb-12 border-t-4 border-brand-orange relative overflow-hidden">
+    <!-- Curved line graphic from assets -->
+    <div class="absolute right-0 bottom-0 opacity-15 pointer-events-none">
+      <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDExzEdNEJjJRtxbnKUpejdxZIrGhjNp8NSo2rQwm4-kh4jDS7C-O3FsRCBjl05ngNdRORyTQQ_5LEaopsh4r0zsIpI-_yxzQc1U17X8a8Y791UjqAHo_AkkVIVvNi8GqzZ3BDXn5J3kLn_DKz7NQMWcoyn-G1v5A6w-ejwiQAm__3vCRMIuV9CdiL3a0w9ourIO7fBDiW6mLKiDburqLuzluZG-UUBvl_aGNb8fdBkGp8gsWD-bhya" alt="Curva" class="w-64 filter invert">
+    </div>
+
+    <div class="max-w-4xl mx-auto px-4 relative z-10">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-white/10">
+        <!-- Brand Info -->
+        <div class="flex flex-col items-center md:items-start text-center md:text-left">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlA5B3SAs4I4xOPEu4Nvhw7ay43QRANnNTTapBPMqZQBeUpozQV0DqWTJY1XUU159AAJGO_vskAxdcOfLFEgXuevXHZGIHic6T2va1gJ0_XlaTbEQnWYlbf137uBUJiT33LJUQY6TXMfeTPNs3b3UNzaaZx6SHgKkA-Tz5ZlJWheY3MIBtjUGMZpJLjRBAAca80YK6OTWNkMVEYkT5_N0HIXhlyMsnsdIazoakoLpvVJ4IRpzw59kd" alt="Scire Empreendimentos" class="h-8 object-contain invert brightness-150 mb-2">
+          <p class="text-xs text-slate-400 max-w-xs font-normal">
+            Transformando o jeito de viver com projetos inovadores, esporte, bem-estar e celebração da vida.
+          </p>
+        </div>
+
+        <!-- Social Links & Official Sites -->
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <a href="https://www.instagram.com/scireempreendimentos/" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold text-white hover:bg-brand-orange transition-all duration-300">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.09-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path></svg>
+            <span>@scireempreendimentos</span>
+          </a>
+
+          <a href="https://www.scireempreendimentos.com.br/" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold text-white hover:bg-brand-sky transition-all duration-300">
+            <svg class="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+            <span>Portal Oficial Scire</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 text-center sm:text-left gap-2">
+        <div>
+          © 2025 Scire Empreendimentos • Todos os direitos reservados. Evento PLAY TO WIN.
+        </div>
+        <div class="font-script text-base text-brand-orange">
+          Vencer como um time campeão!
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ==============================================
+       6. INTERACTION SCRIPTS & ENGINE
+       ============================================== -->
+  <script>
+    // 1. Loading Screen Minimalist Stopwatch logic
+    document.addEventListener("DOMContentLoaded", () => {
+      const circle = document.getElementById("timer-progress");
+      const counterText = document.getElementById("timer-counter");
+      const loadingScreen = document.getElementById("loading-screen");
+
+      const totalLength = 283; // 2 * PI * 45
+      let progress = 0;
+      const duration = 1000; // 1 second as requested
+      const intervalTime = 15;
+      const step = 100 / (duration / intervalTime);
+
+      const timer = setInterval(() => {
+        progress += step;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(timer);
+          
+          counterText.innerText = "100%";
+          circle.style.strokeDashoffset = "0";
+
+          // Fade out loading screen smoothly
+          setTimeout(() => {
+            loadingScreen.style.opacity = "0";
+            loadingScreen.style.pointerEvents = "none";
+            setTimeout(() => {
+              loadingScreen.style.display = "none";
+            }, 700);
+          }, 250);
+        } else {
+          const currentVal = Math.floor(progress);
+          counterText.innerText = currentVal + "%";
+          const offset = totalLength - (currentVal / 100) * totalLength;
+          circle.style.strokeDashoffset = offset;
+        }
+      }, intervalTime);
+    });
+
+    // 2. Acordeão (Tap to Expand) + Ripple Feedback
+    function toggleCard(cardElement) {
+      const content = cardElement.querySelector('.accordion-content');
+      const chevron = cardElement.querySelector('.chevron-icon');
+      const isExpanded = content.classList.contains('expanded');
+
+      // Fechar outros da mesma seção se quiser foco limpo, ou manter livre
+      if (isExpanded) {
+        content.classList.remove('expanded');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+      } else {
+        content.classList.add('expanded');
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+
+        // Dispara animação de barra de progresso caso tenha
+        const bars = content.querySelectorAll('.status-bar-inner');
+        bars.forEach(bar => {
+          const targetW = bar.style.width;
+          bar.style.width = '0%';
+          setTimeout(() => {
+            bar.style.width = targetW;
+          }, 50);
+        });
+      }
+
+      // Adiciona o efeito visual de onda / toque esportivo (ripple)
+      createRipple(event, cardElement);
+    }
+
+    function createRipple(event, element) {
+      const circle = document.createElement("span");
+      const diameter = Math.max(element.clientWidth, element.clientHeight);
+      const radius = diameter / 2;
+      const rect = element.getBoundingClientRect();
+
+      circle.style.width = circle.style.height = `${diameter}px`;
+      circle.style.left = `${(event.clientX || (rect.left + rect.width / 2)) - rect.left - radius}px`;
+      circle.style.top = `${(event.clientY || (rect.top + 20)) - rect.top - radius}px`;
+      circle.classList.add("ripple-effect");
+
+      const existingRipple = element.querySelector(".ripple-effect");
+      if (existingRipple) {
+        existingRipple.remove();
+      }
+
+      element.appendChild(circle);
+      setTimeout(() => circle.remove(), 600);
+    }
+
+    // 3. Troca de Categorias com deslizamento suave
+    function switchCategory(targetId, buttonElement) {
+      // Atualiza estilo dos botões das abas
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.remove('text-white', 'bg-brand-orange', 'shadow-md');
+        btn.classList.add('text-slate-600');
+      });
+
+      buttonElement.classList.add('text-white', 'bg-brand-orange', 'shadow-md');
+      buttonElement.classList.remove('text-slate-600');
+
+      // Scroll suave até a seção
+      const section = document.getElementById(`section-${targetId}`);
+      if (section) {
+        const offset = 120; // altura do header sticky
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = section.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }
+
+    // 4. Filtros de Performance
+    function toggleFilter(filterKey, buttonElement) {
+      document.querySelectorAll('.filter-pill').forEach(btn => {
+        btn.classList.remove('bg-brand-navy', 'text-white', 'border-brand-navy');
+        btn.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+      });
+
+      buttonElement.classList.add('bg-brand-navy', 'text-white', 'border-brand-navy');
+      buttonElement.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+
+      const allCards = document.querySelectorAll('.menu-card');
+      allCards.forEach(card => {
+        if (filterKey === 'all') {
+          card.style.display = 'block';
+        } else {
+          const tags = card.getAttribute('data-tags') || '';
+          if (tags.includes(filterKey)) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        }
+      });
+    }
+  </script>
+
+
+
+
+</body></html>
